@@ -21,7 +21,8 @@ PORT = int(os.environ.get("SERVE_PORT", "8126"))
 
 
 def allowed(name):
-    if name in ("health", "proxy_list.txt", "gologin_proxies.txt", "proxies_collected.txt"):
+    if name in ("health", "proxy_list.txt", "gologin_proxies.txt",
+                "proxies_collected.txt", "proxies_live.txt", "proxies_dead.txt"):
         return True
     return bool(re.fullmatch(r"proxy_[A-Z]{2}\.txt", name))
 

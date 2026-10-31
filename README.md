@@ -70,9 +70,11 @@ or accounts are hardcoded in the scripts.
 
 Output files (all under `BASE_DIR`):
 
-- `gologin_proxies.txt` — full deduplicated pool
-- `proxy_<CC>.txt` — proxies per exit country
-- `proxy_list.txt` — index: `filename <count>` per country
+- **`proxies_live.txt`** — the one you probably want: every proxy that passed the country lookup through itself, i.e. actually reachable right now
+- `proxies_dead.txt` — proxies that failed the lookup (unreachable/credentials revoked)
+- `proxy_<CC>.txt` — live proxies grouped by exit country
+- `gologin_proxies.txt` — full deduplicated pool, before liveness classification
+- `proxy_list.txt` — index: `filename <count>` for every list above
 - `accounts.jsonl` — registered account credentials (keep private, `chmod 600`)
 
 ## Scheduling (systemd)

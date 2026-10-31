@@ -29,11 +29,23 @@ while IFS=: read -r h pt u pw; do
   echo "$cc|$h:$pt:$u:$pw" >> .countries.tmp
 done < "$POOL_OUT"
 
-rm -f proxy_??.txt
+rm -f proxy_??.txt proxies_live.txt proxies_dead.txt
 : > proxy_list.txt
+: > proxies_live.txt
+: > proxies_dead.txt
 for cc in $(cut -d'|' -f1 .countries.tmp | sort -u); do
   grep "^$cc|" .countries.tmp | cut -d'|' -f2 > "proxy_${cc}.txt"
   n=$(wc -l < "proxy_${cc}.txt")
   echo "proxy_${cc}.txt $n" >> proxy_list.txt
+  # XX = failed country lookup = effectively dead/unreachable through this proxy.
+  if [ "$cc" = "XX" ]; then
+    cat "proxy_${cc}.txt" >> proxies_dead.txt
+  else
+    cat "proxy_${cc}.txt" >> proxies_live.txt
+  fi
 done
-echo "[$(stamp)] classified=$(wc -l < .countries.tmp) countries=$(cut -d'|' -f1 .countries.tmp | sort -u | paste -sd, -)" >> "$LOG"
+alive=$(wc -l < proxies_live.txt)
+dead=$(wc -l < proxies_dead.txt)
+echo "proxies_live.txt $alive" >> proxy_list.txt
+echo "proxies_dead.txt $dead" >> proxy_list.txt
+echo "[$(stamp)] classified=$(wc -l < .countries.tmp) alive=$alive dead=$dead countries=$(cut -d'|' -f1 .countries.tmp | sort -u | paste -sd, -)" >> "$LOG"
