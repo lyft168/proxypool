@@ -4,6 +4,11 @@ Automated proxy pool manager. Registers trial accounts on GoLogin, collects the
 residential proxies that come with each trial, validates each proxy's exit
 country, and publishes the resulting lists as plain-text files over HTTP.
 
+**Platform: Linux** (x86_64). The browser automation stack (Camoufox + Xvfb)
+and the scheduling (systemd, flock) require a Linux environment; on Windows use
+a Linux VM or WSL2 with a full distro. `pxserve.py` and `--dedupe` also work on
+Windows/macOS.
+
 ## How it works
 
 - **collector (`main.py`)** — drives a real browser (Camoufox) through the

@@ -7,6 +7,14 @@ credentials. Configure with SERVE_HOST / SERVE_PORT / BASE_DIR (.env).
 import http.server, os, re, socketserver
 from pathlib import Path
 
+_env = Path(os.environ.get("BASE_DIR") or Path(__file__).resolve().parent) / ".env"
+if _env.exists():
+    for _l in _env.read_text().splitlines():
+        _l = _l.strip()
+        if _l and not _l.startswith("#") and "=" in _l:
+            _k, _, _v = _l.partition("=")
+            os.environ.setdefault(_k.strip(), _v.strip())
+
 BASE = Path(os.environ.get("BASE_DIR") or Path(__file__).resolve().parent)
 HOST = os.environ.get("SERVE_HOST", "0.0.0.0")
 PORT = int(os.environ.get("SERVE_PORT", "8126"))

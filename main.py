@@ -20,6 +20,23 @@ real UI rather than plain HTTP calls.
 import argparse, asyncio, json, os, secrets, signal, string, subprocess, sys, time, urllib.request
 from pathlib import Path
 
+
+def _load_dotenv():
+    """Load BASE_DIR/.env (KEY=VALUE lines) into the environment if present,
+    without external dependencies. Real environment variables win."""
+    env_path = Path(os.environ.get("BASE_DIR") or Path(__file__).resolve().parent) / ".env"
+    if not env_path.exists():
+        return
+    for line in env_path.read_text().splitlines():
+        line = line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        k, _, v = line.partition("=")
+        os.environ.setdefault(k.strip(), v.strip())
+
+
+_load_dotenv()
+
 # ---- configuration (all overridable via .env / environment) ----------------
 BASE = Path(os.environ.get("BASE_DIR") or Path(__file__).resolve().parent)
 POOL = Path(os.environ.get("POOL_FILE") or BASE / "proxies_http.txt")
@@ -225,6 +242,11 @@ def stop():
 
 
 def dedupe():
+    if not OUT_PX.exists():
+        OUT_PX.touch()
+        OUT_DEDUPE.write_text("")
+        print("nothing collected yet; created empty", OUT_DEDUPE.name)
+        return
     seen = {}
     for l in OUT_PX.read_text().splitlines():
         if l.strip():
