@@ -28,6 +28,7 @@ fi
     /usr/bin/Xvfb "$DISPLAY" -screen 0 1280x1024x24 >/dev/null 2>&1 &
     sleep 2
   fi
+  bash "$BASE_DIR/bootstrap_pool.sh"
   DISPLAY="$DISPLAY" "$PY" "$BASE_DIR/main.py" "${ACCOUNTS_PER_RUN:-1}"
   rc=$?
   "$PY" "$BASE_DIR/main.py" --dedupe 2>/dev/null

@@ -64,6 +64,7 @@ or accounts are hardcoded in the scripts.
 | `EMAIL_DOMAIN` | — (required) | Domain used for generated registration addresses |
 | `ACCOUNTS_PER_RUN` | `1` | Accounts to register per scheduled run |
 | `MAX_ATTEMPTS` | `4` | Retries per account before giving up |
+| `POOL_MIN` | `20` | `bootstrap_pool.sh` refills `POOL_FILE` from `proxies_live.txt` when it drops below this |
 | `DISPLAY` | `:99` | X server display for the headless-with-Xvfb browser |
 | `SERVE_HOST` / `SERVE_PORT` | `0.0.0.0` / `8126` | Bind address for `pxserve.py` |
 | `GEO_API_URL` | ip-api endpoint | Country lookup URL (must return `countryCode`) |
