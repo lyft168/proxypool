@@ -1,0 +1,11 @@
+[Unit]
+Description=proxypool list server
+After=network.target
+
+[Service]
+EnvironmentFile=-/opt/proxypool/.env
+ExecStart=/opt/proxypool/venv/bin/python /opt/proxypool/pxserve.py
+Restart=always
+
+[Install]
+WantedBy=multi-user.target

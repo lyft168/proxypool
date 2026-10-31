@@ -1,0 +1,7 @@
+[Unit]
+Description=proxypool country classification
+
+[Service]
+Type=oneshot
+EnvironmentFile=-/opt/proxypool/.env
+ExecStart=/bin/bash /opt/proxypool/country_split.sh
