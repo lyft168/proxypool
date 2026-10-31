@@ -51,13 +51,26 @@ OUT_PX = BASE / "proxies_collected.txt"
 OUT_DEDUPE = BASE / "gologin_proxies.txt"
 STOP_FILE = BASE / "STOP"
 
-if not EMAIL_DOMAIN:
-    sys.exit("EMAIL_DOMAIN is not set — copy .env.example to .env and configure it.")
-if not POOL.exists():
-    sys.exit(f"proxy pool file not found: {POOL} — set POOL_FILE in .env (host:port:user:pass per line).")
-
-POOL_LINES = [l.strip() for l in POOL.read_text().splitlines() if l.strip()]
+POOL_LINES = []
 _rot = [0]
+
+
+def _preflight():
+    """Validate config and load the proxy pool. Called from main() so that
+    `--stop` and `--dedupe` still work when EMAIL_DOMAIN or POOL_FILE are
+    unset. Any variable in .env or the real environment wins."""
+    global POOL_LINES, EMAIL_DOMAIN, POOL
+    EMAIL_DOMAIN = os.environ.get("EMAIL_DOMAIN", EMAIL_DOMAIN)
+    pool_env = os.environ.get("POOL_FILE")
+    if pool_env:
+        POOL = Path(os.path.expanduser(os.path.expandvars(pool_env)))
+    if not EMAIL_DOMAIN:
+        sys.exit("EMAIL_DOMAIN is not set — copy .env.example to .env and configure it.")
+    if not POOL.exists():
+        sys.exit(f"proxy pool file not found: {POOL} — set POOL_FILE in .env (host:port:user:pass per line, absolute path).")
+    POOL_LINES[:] = [l.strip() for l in POOL.read_text().splitlines() if l.strip()]
+    if not POOL_LINES:
+        sys.exit(f"proxy pool file is empty: {POOL}")
 
 
 def next_proxy():
@@ -266,6 +279,7 @@ def main():
         stop(); return
     if a.dedupe:
         dedupe(); return
+    _preflight()
     if a.burst is not None:
         burst(a.burst); return
     asyncio.run(collect(max(1, a.n), MAX_ATTEMPTS))
